@@ -2,13 +2,20 @@ name: Deploy
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
   id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orveta
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -21,7 +28,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: sb_publishable_tB4YKJt1pjs7gODn60NGgg_P4EKtYwE
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: orveta/dist
   deploy:
     needs: build
     runs-on: ubuntu-latest
